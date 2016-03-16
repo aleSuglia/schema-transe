@@ -4,7 +4,7 @@ local tds = require "tds";
 local data = require "pl.data";
 
 function read_triples(triples_filename, delimiter)
-   local num_lines = 0
+    local num_lines = 0
    
     for line in io.lines(triples_filename) do
         num_lines = num_lines + 1
@@ -47,7 +47,6 @@ function read_triples(triples_filename, delimiter)
         triples[i][3] = entity2id[object]
 
         i = i + 1
-
     end
 
     return {
