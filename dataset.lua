@@ -1,7 +1,5 @@
-local stringx = require "pl.stringx";
-local file = require "pl.file";
 local tds = require "tds";
-local data = require "pl.data";
+local stringx = require "pl.stringx";
 
 function read_triples(triples_filename, delimiter)
     local num_lines = 0
