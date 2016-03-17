@@ -55,3 +55,5 @@ function read_triples(triples_filename, delimiter)
         id2relation = id2relation
     }
 end
+
+
