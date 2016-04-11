@@ -1,0 +1,13 @@
+{
+    "triples": "/home/asuglia/dataset/wordnet/wordnet_train.csv",
+    "optim_method":"sgd",
+    "training_params": {
+        "learningRate": 0.01
+    },
+    "batch_size": 256,
+    "num_epochs": 25,
+    "entities_embeddings_size": 10,
+    "relations_embeddings_size": 10,
+    "margin": 1,
+    "cuda": false
+}
