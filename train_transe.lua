@@ -21,7 +21,8 @@ print(title)
 
 --[[
     JSON configuration file parameters:
-        - triples: filename of triples in CSV format
+        - triples_filename: filename of triples in CSV format
+        - model_filename: filename of the learnt model
         - optim_method: optimization method identifier used in optim package
         - training_params: parameters of the training method
         - batch_size: number of training examples in a batch
@@ -44,8 +45,8 @@ local params = cmd:parse(arg)
 
 local conf_data = cjson.decode(file.read(params.config))
 
-print("-- Loading triples data: " .. conf_data["triples"])
-local triples_data = read_triples_data(conf_data["triples"])
+print("-- Loading triples data: " .. conf_data["triples_filename"])
+local triples_data = read_triples_data(conf_data["triples_filename"])
 
 local optim_method_id = conf_data["optim_method"]
 local optim_method
@@ -186,3 +187,6 @@ for e = 1, num_epochs do
    print("Average cost per epoch: " .. average_cost)
   
 end
+
+print("-- Saving final model")
+torch.save(conf_data["model_filename"], model)
