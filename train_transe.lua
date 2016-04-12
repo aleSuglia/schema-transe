@@ -27,8 +27,7 @@ print(title)
         - training_params: parameters of the training method
         - batch_size: number of training examples in a batch
         - num_epochs: number of training epochs
-        - entities_embeddings_size: size of entity embeddings
-        - relations_embeddings_size: size of relation embeddings
+        - embeddings_size: size of entity and relation embeddings
         - margin: margin for the Hinge criterion
         - cuda: true enables CUDA, otherwise false
 --]]
@@ -65,8 +64,7 @@ else
     print("Invalid training method: " .. optim_method_id)
 end
 
-local entities_embeddings_size = conf_data["entities_embeddings_size"]
-local relations_embeddings_size = conf_data["relations_embeddings_size"]
+local embeddings_size = conf_data["embeddings_size"]
 local margin = conf_data["margin"]
 local batch_size = conf_data["batch_size"]
 local num_epochs = conf_data["num_epochs"]
@@ -85,7 +83,7 @@ print("Number of entities:\t" .. #triples_data["entity2id"])
 print("Number of relations:\t" .. #triples_data["relation2id"])
 
 print("-- Building TransE model")
-local model = build_transe_model(triples_data, entities_embeddings_size, relations_embeddings_size)
+local model = build_transe_model(triples_data, embeddings_size)
 
 local criterion = nn.HingeEmbeddingCriterion(margin)
 

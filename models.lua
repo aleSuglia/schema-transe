@@ -1,16 +1,24 @@
 require "nn";
 
 -- Builds TransE model by Bordes et. al
-function build_transe_model(triples_data, entities_embeddings_size, relations_embeddings_size)
+function build_transe_model(triples_data, embeddings_size)
+   function init_lookup_weights(entities_lookup, relations_lookup, embeddings_size)
+      entities_lookup.weigth:uniform(-6/math.sqrt(embeddings_lookup), 6/math.sqrt(embeddings_lookup))
+      relations_lookup.weight:uniform(-6/math.sqrt(embeddings_lookup), 6/math.sqrt(embeddings_lookup))
+      relations_lookup.weight:div(relations_lookup:norm(2))
+   end   
+
    local num_entities = #triples_data["entity2id"]
    local num_relations = #triples_data["relation2id"]
    --local num_entities = 7
    --local num_relations = 10
       
    local full_model = nn.Sequential()
-   local entities_lookup = nn.Sequential():add(nn.LookupTable(num_entities, entities_embeddings_size)):add(nn.Normalize(2))
-   local relations_lookup = nn.LookupTable(num_relations, relations_embeddings_size)
+   local entities_lookup = nn.Sequential():add(nn.LookupTable(num_entities, embeddings_size)):add(nn.Normalize(2))
+   local relations_lookup = nn.LookupTable(num_relations, embeddings_size)
 
+   init_lookup_weights(entities_lookup, relations_lookup, embeddings_size)
+   
    local correct_sp = nn.SplitTable(2)
    correct_sp.updateGradInput = function() end
    local correct_triples_model = nn.Sequential():add(correct_sp)
