@@ -17,7 +17,7 @@ do
    local timer
    local times
    local indices
-   local termLength = math.min(getTermLength(), 120)
+   local termLength = math.min(getTermLength(), 110)
 
    function progress(current, goal, cost)
       -- defaults:
