@@ -26,17 +26,14 @@ function eval_triple_ranking(triple_batch, num_entities, outputs, inverted_relat
        local subj = current_triple[1]
        local rel = current_triple[2]
        local obj = current_triple[3]
-       if subj == triple_batch_subj[1][1] and
+        if subj == triple_batch_subj[1][1] and
           rel == triple_batch_subj[1][2] and
           obj == triple_batch_subj[1][3] then
-           correct_subj_rank = i
-       end
-       if i <= topn and
-          inverted_relations[subj] and
-          inverted_relations[subj][obj] and
-          inverted_relations[subj][obj][rel] then
-          subj_hits = subj_hits + 1
-       end
+          correct_subj_rank = i
+          if i <= topn then
+              subj_hits = subj_hits + 1
+          end
+        end
    end
 
    local obj_hits = 0
@@ -48,15 +45,12 @@ function eval_triple_ranking(triple_batch, num_entities, outputs, inverted_relat
        local rel = current_triple[2]
        local obj = current_triple[3]
        if subj == triple_batch_obj[1][1] and
-          rel == triple_batch_obj[1][2] and
-          obj == triple_batch_obj[1][3] then
+           rel == triple_batch_obj[1][2] and
+           obj == triple_batch_obj[1][3] then
            correct_obj_rank = i
-       end
-       if i <= topn and
-          inverted_relations[subj] and
-          inverted_relations[subj][obj] and
-          inverted_relations[subj][obj][rel] then
-          obj_hits = obj_hits + 1
+           if i <= topn then
+               obj_hits = obj_hits + 1
+           end
        end
    end
 
