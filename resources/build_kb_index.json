@@ -1,0 +1,7 @@
+{ 
+   "train_filename": "../datasets/github/train.csv", 
+   "test_filename": "../datasets/github/test.csv", 
+   "validation_filename": "../datasets/github/valid.csv", 
+   "triple_delimiter": ",", 
+   "kb_index_filename": "../datasets/github/kb_index.t7"
+}

@@ -1,0 +1,11 @@
+
+{
+    "test_filename": "../datasets/github/test.csv",
+    "triple_delimiter": ",",
+    "model_filename": "../datasets/github/transe_reasoner_disjoint.t7",
+    "kb_index_filename": "../datasets/github/kb_index.t7",
+    "topn": 10,
+    "batch_size": 5120,
+    "cuda": false
+}
+

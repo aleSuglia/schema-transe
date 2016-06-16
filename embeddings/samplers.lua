@@ -21,7 +21,8 @@ local function post(request_data, server_url)
     sink = sink
   }
 
-  return cjson.decode(response[1])
+  --print(cjson.decode(table.concat(response)))
+  return cjson.decode(table.concat(response))
 end
 
 function sample_random(triple_batch, kb_index, params)
@@ -70,8 +71,12 @@ function sample_reasoner(triple_batch, kb_index, params)
     local entity2id = kb_index["entity2id"]
     local relation2id = kb_index["relation2id"]
     
+    --print("New request:")
     request_data["triples"] = {}
     for i=1, triple_batch:size(1) do
+        --print(id2entity[triple_batch[i][1]])
+        --print(id2relation[triple_batch[i][2]])
+        --print(id2entity[triple_batch[i][3]])
         request_data["triples"][i] = {
             subject=id2entity[triple_batch[i][1]],
             predicate=id2relation[triple_batch[i][2]],
@@ -80,16 +85,23 @@ function sample_reasoner(triple_batch, kb_index, params)
     end
     request_data["size"] = params["size"]
 
+    --print(request_data)
     local corrupted_triples = post(request_data, params["server_url"])
     local corrupted_triple_batch = torch.Tensor(triple_batch:size(1) * params["size"], 3)
 
     local index = 1
     for i, cts in pairs(corrupted_triples) do
         for k, ct in pairs(cts) do
+            --print(ct["subject"]) 
+            --print(entity2id[ct["subject"]])
+            --print(ct["predicate"])
+            --print(relation2id[ct["predicate"]])
+            --print(ct["object"])
+            --print(entity2id[ct["object"]])
             corrupted_triple_batch[{index, {}}] = torch.Tensor{
-                entity2id[ct["subject"]],
-                relation2id[ct["predicate"]],
-                entity2id[ct["object"]]
+               entity2id[tonumber(ct["subject"])],
+               relation2id[tonumber(ct["predicate"])],
+               entity2id[tonumber(ct["object"])]
             }
             index = index + 1
         end

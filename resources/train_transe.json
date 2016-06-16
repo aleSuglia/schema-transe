@@ -1,0 +1,24 @@
+{
+    "train_filename": "../datasets/github/train.csv",
+    "triple_delimiter": ",",
+    "model_filename": "../datasets/github/transe_reasoner_disjoint.t7",
+    "kb_index_filename": "../datasets/github/kb_index.t7",
+    "optim_method":"adagrad",
+    "training_params": {
+        "learningRate": 0.1,
+        "weightDecay": 0.0001
+    },
+    "sampler": {
+        "id": "reasoner",
+        "params": {
+            "server_url": "http://localhost:8080/corrupted",
+            "size": 1
+        }
+    },
+    "batch_size": 5120,
+    "num_epochs": 100,
+    "embeddings_size": 100,
+    "margin": 1,
+    "cuda": false
+}
+

@@ -13,9 +13,9 @@ function build_kb_index(train_filename, test_filename, validation_filename, deli
     function build_index(filename)
         for line in io.lines(filename) do
             local splitted_line = stringx.split(line, delimiter)
-            local subject = splitted_line[1]
-            local property = splitted_line[2]
-            local object = splitted_line[3]
+            local subject = tonumber(splitted_line[1])
+            local property = tonumber(splitted_line[2])
+            local object = tonumber(splitted_line[3])
 
             if not entity2id[subject] then
                entity2id[subject] = num_entities
@@ -66,9 +66,9 @@ function read_triples(triples_filename, delimiter, kb_index)
     
     for line in io.lines(triples_filename) do
         local splitted_line = stringx.split(line, delimiter)
-        local subject = splitted_line[1]
-        local property = splitted_line[2]
-        local object = splitted_line[3]
+        local subject = tonumber(splitted_line[1])
+        local property = tonumber(splitted_line[2])
+        local object = tonumber(splitted_line[3])
 
         triples[i][1] = entity2id[subject]
         triples[i][2] = relation2id[property]

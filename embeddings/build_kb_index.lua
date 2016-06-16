@@ -1,6 +1,6 @@
-require "dataset.lua";
 file = require "pl.file";
 cjson = require "cjson";
+require "dataset.lua";
 
 local title = "### Knowledge base index builder ###"
 
