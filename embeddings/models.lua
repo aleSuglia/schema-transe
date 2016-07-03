@@ -1,18 +1,18 @@
 require "nn";
 
 function normalize_lookup_table(lookup_table, p)
-    norms = torch.norm(lookup_table.weight, p, 2)
+    local norms = torch.norm(lookup_table.weight, p, 2)
     for i=1,norms:size(1) do
         lookup_table.weight[{i, {}}]:div(norms[i][1])
     end
 end
 
 function build_transe_model(num_entities, num_relations, embeddings_size)
-    function init_lookup_weights(entities_lookup, relations_lookup, embeddings_size)
+    local function init_lookup_weights(entities_lookup, relations_lookup, embeddings_size)
         entities_lookup.weight:uniform(-6/math.sqrt(embeddings_size), 6/math.sqrt(embeddings_size))
         relations_lookup.weight:uniform(-6/math.sqrt(embeddings_size), 6/math.sqrt(embeddings_size))
         normalize_lookup_table(relations_lookup, 2)
-        end
+    end
 
     local full_model = nn.Sequential()
     local entities_lookup = nn.LookupTable(num_entities, embeddings_size)

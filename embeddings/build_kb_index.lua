@@ -15,7 +15,6 @@ cmd:option("-config", "", "Filename of JSON training parameters")
 cmd:text()
 
 local params = cmd:parse(arg)
-
 local conf_data = cjson.decode(file.read(params.config))
 
 local train_filename = conf_data["train_filename"]

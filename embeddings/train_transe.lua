@@ -79,7 +79,7 @@ local num_corrupted = conf_sampler["params"]["size"]
 
 local training_params = {}
 for k, v in pairs(conf_data["training_params"]) do
-   training_params[k] = v
+    training_params[k] = v
 end
 
 local num_triples = triples:size(1)
@@ -103,7 +103,7 @@ if conf_data["cuda"] then
     cutorch.setDevice(1)
     cutorch.manualSeed(12345)
     model = model:cuda()
-    criterion = criterion:cuda()   
+    criterion = criterion:cuda()
 end
 
 -- get model parameters
@@ -134,72 +134,73 @@ for e = 1, num_epochs do
             targets = targets:cuda()
         end
 
-      corrupted_triples_batch = sampler(triples:index(1, v), kb_index, conf_sampler["params"])
+        corrupted_triples_batch = sampler(triples:index(1, v), kb_index, conf_sampler["params"])
 
-      for i=1, v:size(1) do
-         local triple_id = v[i]
-         local current_triple = triples[triple_id]
-         correct_triples_batch[{{(i-1)*num_corrupted+1, i*num_corrupted}, {}}] =
+        for i = 1, v:size(1) do
+            local triple_id = v[i]
+            local current_triple = triples[triple_id]
+            correct_triples_batch[{ { (i - 1) * num_corrupted + 1, i * num_corrupted }, {} }] =
             torch.repeatTensor(current_triple, num_corrupted, 1)
-      end
+        end
 
-      local inputs = {
+        local inputs = {
             {
-                correct_triples_batch[{{}, 1}],
-                correct_triples_batch[{{}, 2}],
-                correct_triples_batch[{{}, 3}]},
+                correct_triples_batch[{ {}, 1 }],
+                correct_triples_batch[{ {}, 2 }],
+                correct_triples_batch[{ {}, 3 }]
+            },
             {
-                corrupted_triples_batch[{{}, 1}],
-                corrupted_triples_batch[{{}, 2}],
-                corrupted_triples_batch[{{}, 3}]
+                corrupted_triples_batch[{ {}, 1 }],
+                corrupted_triples_batch[{ {}, 2 }],
+                corrupted_triples_batch[{ {}, 3 }]
             }
         }
 
-      -- callback that does a single batch optimization step
-      local batch_optimize = function(x)
-         -- get new parameters
-         if x ~= params then
-            params:copy(x)
-         end
+        -- callback that does a single batch optimization step
+        local batch_optimize = function(x)
+            -- get new parameters
+            if x ~= params then
+                params:copy(x)
+            end
 
-         -- reset gradients
-         grad_params:zero()
-            
-         -- normalize entities lookup weights
-         local entities_lookup = model:get(1):get(1):get(1):get(1)
-         normalize_lookup_table(entities_lookup, 2)
+            -- reset gradients
+            grad_params:zero()
 
-         -- backward propagation
-         local outputs = model:forward(inputs)
-         local f = criterion:forward(outputs, targets)
-         local df_do = criterion:backward(outputs, targets)
-         model:backward(inputs, df_do)
+            -- normalize entities lookup weights
+            local entities_lookup = model:get(1):get(1):get(1):get(1)
+            normalize_lookup_table(entities_lookup, 2)
 
-         if conf_data["training_params"]["weightDecay"] then
-            local coefL2 = conf_data["training_params"]["weightDecay"]
-            local norm, sign = torch.norm, torch.sign
-            f = f + coefL2 * norm(params, 2)^2/2
-            grad_params:add(params:clone():mul(coefL2))
-         end
+            -- backward propagation
+            local outputs = model:forward(inputs)
+            local f = criterion:forward(outputs, targets)
+            local df_do = criterion:backward(outputs, targets)
+            model:backward(inputs, df_do)
 
-         -- return f and df/dX
-         return f, grad_params
-      end
+            if conf_data["training_params"]["weightDecay"] then
+                local coefL2 = conf_data["training_params"]["weightDecay"]
+                local norm, sign = torch.norm, torch.sign
+                f = f + coefL2 * norm(params, 2) ^ 2 / 2
+                grad_params:add(params:clone():mul(coefL2))
+            end
 
-      -- optimize on current mini-batch
-      local _, fs = optim_method(batch_optimize, params, training_params)
+            -- return f and df/dX
+            return f, grad_params
+        end
 
-      -- evaluate current loss function value
-      local current_cost = fs[1]
-      average_cost = average_cost + current_cost
+        -- optimize on current mini-batch
+        local _, fs = optim_method(batch_optimize, params, training_params)
 
-      -- show custom progress bar
-      progress(t, #indices, current_cost)
-   end
+        -- evaluate current loss function value
+        local current_cost = fs[1]
+        average_cost = average_cost + current_cost
 
-   -- evaluate average cost per epoch
-   local average_cost = round(average_cost / #indices, 4)
-   print("Average cost per epoch: " .. average_cost)
+        -- show custom progress bar
+        progress(t, #indices, current_cost)
+    end
+
+    -- evaluate average cost per epoch
+    local average_cost = round(average_cost / #indices, 4)
+    print("Average cost per epoch: " .. average_cost)
 end
 
 print("-- Saving final model")

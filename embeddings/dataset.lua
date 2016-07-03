@@ -10,7 +10,7 @@ function build_kb_index(train_filename, test_filename, validation_filename, deli
     local num_entities = 1
     local num_relations = 1
 
-    function build_index(filename)
+    local function build_index(filename)
         for line in io.lines(filename) do
             local splitted_line = stringx.split(line, delimiter)
             local subject = tonumber(splitted_line[1])
@@ -51,19 +51,17 @@ end
 
 function read_triples(triples_filename, delimiter, kb_index)
     local num_lines = 0
-   
-    for line in io.lines(triples_filename) do
+
+    for _ in io.lines(triples_filename) do
         num_lines = num_lines + 1
     end
 
     local delimiter = delimiter or ","
     local triples = torch.Tensor(num_lines, 3)
     local entity2id = kb_index["entity2id"]
-    local id2entity = kb_index["id2entity"]
     local relation2id = kb_index["relation2id"]
-    local id2relation = kb_index["id2relation"]
     local i = 1
-    
+
     for line in io.lines(triples_filename) do
         local splitted_line = stringx.split(line, delimiter)
         local subject = tonumber(splitted_line[1])

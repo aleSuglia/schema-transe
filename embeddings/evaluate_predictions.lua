@@ -5,22 +5,19 @@ tds = require "tds";
 file = require "pl.file";
 cjson = require "cjson";
 
-function eval_triple_ranking(triple_batch, num_entities, outputs, inverted_relations, topn)
+function eval_triple_ranking(triple_batch, num_entities, outputs, topn)
    local triple_batch_subj = triple_batch[{{1, num_entities}, {}}]
    local triple_batch_obj = torch.Tensor(num_entities, 3)
    triple_batch_obj[{{1}, {}}] = triple_batch[{{1}, {}}]
    triple_batch_obj[{{2, num_entities}, {}}] = triple_batch[{{num_entities+1, 2*num_entities-1}, {}}]
-
    local outputs_subj = outputs[{{1, num_entities}}]
    local outputs_obj = torch.Tensor(num_entities)
    outputs_obj[1] = outputs[1]
    outputs_obj[{{2, num_entities}}] = outputs[{{num_entities+1, 2*num_entities-1}}]
-   
-   local current_relation = triple_batch[1][2]
 
    local subj_hits = 0
    local correct_subj_rank
-   local y, indexes = torch.sort(outputs_subj)
+   local _, indexes = torch.sort(outputs_subj)
    for i=1, indexes:size(1) do
        local current_triple = triple_batch_subj[indexes[i]]
        local subj = current_triple[1]
@@ -38,7 +35,7 @@ function eval_triple_ranking(triple_batch, num_entities, outputs, inverted_relat
 
    local obj_hits = 0
    local correct_obj_rank
-   local y, indexes = torch.sort(outputs_obj)
+   local _, indexes = torch.sort(outputs_obj)
    for i=1, indexes:size(1) do
        local current_triple = triple_batch_obj[indexes[i]]
        local subj = current_triple[1]
@@ -57,36 +54,8 @@ function eval_triple_ranking(triple_batch, num_entities, outputs, inverted_relat
    return subj_hits, obj_hits, correct_subj_rank, correct_obj_rank
 end
 
-function build_inverted_relations(triples)
-   local inverted_relations = tds.Hash()
-
-   for i=1, triples:size(1) do
-        local current_triple = triples[i]
-        local subj = current_triple[1]
-        local rel = current_triple[2]
-        local obj = current_triple[3]
-        
-        if not inverted_relations[subj] then
-            inverted_relations[subj] = tds.Hash()
-        end
-        
-        if not inverted_relations[subj][obj] then
-            inverted_relations[subj][obj] = tds.Hash()
-        end
-        
-        if not inverted_relations[subj][obj][rel] then
-            inverted_relations[subj][obj][rel] = tds.Hash()
-        end
-        
-        inverted_relations[subj][obj][rel] = true
-   end
-
-   return inverted_relations
-end
-
 function evaluate_predictions(model, test_set, kb_index, topn, batch_size, cuda)
    local num_entities = #kb_index["entity2id"]
-   local inverted_relations = build_inverted_relations(test_set)
    local average_subj_hits = 0
    local average_obj_hits = 0
    local mean_subj_rank = 0
@@ -162,7 +131,6 @@ function evaluate_predictions(model, test_set, kb_index, topn, batch_size, cuda)
                                                     current_triple_batch:float(),
                                                     num_entities, 
                                                     outputs,
-                                                    inverted_relations,
                                                     topn
         )
 
@@ -211,7 +179,6 @@ cmd:option("-config", "", "Filename of JSON training parameters")
 cmd:text()
 
 local params = cmd:parse(arg)
-
 local conf_data = cjson.decode(file.read(params.config))
 
 local cuda = conf_data["cuda"]
