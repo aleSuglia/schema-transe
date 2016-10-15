@@ -5,6 +5,7 @@ tds = require "tds";
 file = require "pl.file";
 cjson = require "cjson";
 
+-- Evaluates HITS@k for the triples in the current batch according to the evaluation strategy reported in Bordes et al.
 function eval_triple_ranking(triple_batch, num_entities, outputs, topn)
    local triple_batch_subj = triple_batch[{{1, num_entities}, {}}]
    local triple_batch_obj = torch.Tensor(num_entities, 3)
@@ -54,6 +55,7 @@ function eval_triple_ranking(triple_batch, num_entities, outputs, topn)
    return subj_hits, obj_hits, correct_subj_rank, correct_obj_rank
 end
 
+-- Evaluates model performance on the given test set using HITS@k and MRR
 function evaluate_predictions(model, test_set, kb_index, topn, batch_size, cuda)
    local num_entities = #kb_index["entity2id"]
    local average_subj_hits = 0
@@ -76,7 +78,7 @@ function evaluate_predictions(model, test_set, kb_index, topn, batch_size, cuda)
       local entities_ids_nosubj = torch.Tensor(num_entities-1)
       local entities_ids_noobj = torch.Tensor(num_entities-1)
       
-      -- get entities ids
+      -- Get entities ids
       local key_index_nosubj = 1      
       local key_index_noobj = 1
       for k, _ in pairs(kb_index["id2entity"]) do
@@ -91,24 +93,24 @@ function evaluate_predictions(model, test_set, kb_index, topn, batch_size, cuda)
          end
       end
       
-      -- initialize correct triple
+      -- Initialize correct triple
       current_triple_batch[{1, {}}] = current_triple
 
-      -- initialize relation and object columns in the range (2, num_entities)
+      -- Initialize relation and object columns in the range (2, num_entities)
       -- using current triple relation and object ids
       current_triple_batch[{{2, num_entities}, 2}]:fill(current_triple[2])
       current_triple_batch[{{2, num_entities}, 3}]:fill(current_triple[3])
         
-      -- initialize the subject column values in the range (2, num_entities)
+      -- Initialize the subject column values in the range (2, num_entities)
       -- using corrupted subject id 
       current_triple_batch[{{2, num_entities}, 1}] = entities_ids_nosubj
 
-      -- initialize relation and object columns in the range (num_entities+1, 2*num_entities)
+      -- Initialize relation and object columns in the range (num_entities+1, 2*num_entities)
       -- using current triple subject and relation ids
       current_triple_batch[{{num_entities+1, 2*num_entities-1}, 1}]:fill(current_triple[1])
       current_triple_batch[{{num_entities+1, 2*num_entities-1}, 2}]:fill(current_triple[2])
         
-      -- initialize the subject column values in the range (2, num_entities)
+      -- Initialize the subject column values in the range (2, num_entities)
       -- using corrupted object id 
       current_triple_batch[{{num_entities+1, 2*num_entities-1}, 3}] = entities_ids_noobj  
 

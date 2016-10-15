@@ -20,7 +20,7 @@ do
    local termLength = math.min(getTermLength(), 110)
 
    function progress(current, goal, cost)
-      -- defaults:
+      -- Defaults:
       local barLength = termLength - 12
       local smoothing = 100 
       local maxfps = 10
@@ -28,7 +28,7 @@ do
       -- Compute percentage
       local percent = math.floor(((current) * barLength) / goal)
 
-      -- start new bar
+      -- Start new bar
       if (barDone and ((previous == -1) or (percent < previous))) then
          barDone = false
          previous = -1
@@ -40,10 +40,10 @@ do
          io.write('\r')
       end
 
-      --if (percent ~= previous and not barDone) then
+      -- If (percent ~= previous and not barDone) then
       if (not barDone) then
          previous = percent
-         -- print bar
+         -- Print bar
          io.write(' [')
          for i=1,barLength do
             if (i < percent) then io.write('=')
@@ -53,7 +53,7 @@ do
          io.write('] ')
          for i=1,termLength-barLength-4 do io.write(' ') end
          for i=1,termLength-barLength-4 do io.write('\b') end
-         -- time stats
+         -- Time stats
          local elapsed = timer:time().real
          local step = (elapsed-times[1]) / (current-indices[1])
          if current==indices[1] then step = 0 end
@@ -74,15 +74,15 @@ do
 
 		 io.write(' | Cost: ' .. string.format("%.2f", cost))
 		 
-         -- go back to center of bar, and print progress
+         -- Go back to center of bar, and print progress
          for i=1,6+#tm+barLength/2 do io.write('\b') end
          io.write(' ', current, '/', goal, ' ')
-         -- reset for next bar
+         -- Reset for next bar
          if (percent == barLength) then
             barDone = true
             io.write('\n')
          end
-         -- flush
+         -- Flush
          io.write('\r')
          io.flush()
       end

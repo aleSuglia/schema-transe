@@ -7,7 +7,8 @@ local function post(request_data, server_url)
     local json_request_data = cjson.encode(request_data)
     local source = ltn12.source.string(json_request_data)
     local response = {}
-    local sink = ltn12.sink.table(response) -- Save response from server in chunks
+    -- Save response from server in chunks
+    local sink = ltn12.sink.table(response)
     local ok, code, headers = http.request {
         url = server_url,
         method = "POST",
@@ -22,6 +23,7 @@ local function post(request_data, server_url)
     return cjson.decode(table.concat(response))
 end
 
+-- Samples a random triple according to a uniform probability distribution over the dataset triples
 function sample_random(triple_batch, kb_index, params)
     local num_corrupted = params["size"]
 
@@ -61,6 +63,7 @@ function sample_random(triple_batch, kb_index, params)
     return corrupted_batch
 end
 
+-- Samples a corrupted triple using a schema-aware reasoner
 function sample_reasoner(triple_batch, kb_index, params)
     local request_data = {}
     local id2entity = kb_index["id2entity"]
@@ -96,6 +99,7 @@ function sample_reasoner(triple_batch, kb_index, params)
     return corrupted_triple_batch
 end
 
+-- Returns the sampler with the specified id
 function create_sampler(sampler_id)
     if sampler_id == "random" then
         return sample_random

@@ -1,5 +1,6 @@
 require "nn";
 
+-- Normalizes the lookup table weights using L2-norm
 function normalize_lookup_table(lookup_table, p)
     local norms = torch.norm(lookup_table.weight, p, 2)
     for i=1,norms:size(1) do
@@ -7,6 +8,7 @@ function normalize_lookup_table(lookup_table, p)
     end
 end
 
+-- Builds TranSE model
 function build_transe_model(num_entities, num_relations, embeddings_size)
     local function init_lookup_weights(entities_lookup, relations_lookup, embeddings_size)
         entities_lookup.weight:uniform(-6/math.sqrt(embeddings_size), 6/math.sqrt(embeddings_size))

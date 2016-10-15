@@ -1,6 +1,7 @@
 local tds = require "tds";
 local stringx = require "pl.stringx";
 
+-- Builds a dictionary-like data structure wich maps URIs to ids 
 function build_kb_index(train_filename, test_filename, validation_filename, delimiter)
     local delimiter = delimiter or ","
     local entity2id = tds.Hash()
@@ -49,6 +50,7 @@ function build_kb_index(train_filename, test_filename, validation_filename, deli
     }
 end
 
+-- Reads triples (one for each line) from from a file where each element is separated by the specified delimiter 
 function read_triples(triples_filename, delimiter, kb_index)
     local num_lines = 0
 

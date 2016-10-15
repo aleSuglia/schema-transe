@@ -16,12 +16,6 @@ if __name__ == "__main__":
         writer = csv.writer(out_file)
         writer.writerows(X_test)
 
-    # X_train, X_valid = train_test_split(X_train, test_size=0.3, random_state=12345)
-
     with codecs.open(os.sep.join([output_path, 'train.csv']), 'w', 'utf-8') as out_file:
         writer = csv.writer(out_file)
         writer.writerows(X_train)
-
-        # with codecs.open(os.sep.join([output_path, "valid.tsv"]), "w", "utf-8") as out_file:
-        #    writer = csv.writer(out_file)
-        #    writer.writerows(X_valid)

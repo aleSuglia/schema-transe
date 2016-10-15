@@ -106,16 +106,16 @@ if conf_data["cuda"] then
     criterion = criterion:cuda()
 end
 
--- get model parameters
+-- Get model parameters
 local params, grad_params = model:getParameters()
 
 print("-- Training model using " .. optim_method_id)
 
 for e = 1, num_epochs do
-    -- shuffle and split training examples in batches
+    -- Shuffle and split training examples in batches
     local indices = torch.randperm(num_triples):long():split(batch_size)
 
-    -- remove last element so that all the batches have equal size
+    -- Remove last element so that all the batches have equal size
     indices[#indices] = nil
 
     print("==> doing epoch on training data:")
@@ -156,21 +156,21 @@ for e = 1, num_epochs do
             }
         }
 
-        -- callback that does a single batch optimization step
+        -- Callback that does a single batch optimization step
         local batch_optimize = function(x)
-            -- get new parameters
+            -- Get new parameters
             if x ~= params then
                 params:copy(x)
             end
 
-            -- reset gradients
+            -- Reset gradients
             grad_params:zero()
 
-            -- normalize entities lookup weights
+            -- Normalize entities lookup weights
             local entities_lookup = model:get(1):get(1):get(1):get(1)
             normalize_lookup_table(entities_lookup, 2)
 
-            -- backward propagation
+            -- Backward propagation
             local outputs = model:forward(inputs)
             local f = criterion:forward(outputs, targets)
             local df_do = criterion:backward(outputs, targets)
@@ -183,22 +183,22 @@ for e = 1, num_epochs do
                 grad_params:add(params:clone():mul(coefL2))
             end
 
-            -- return f and df/dX
+            -- Return f and df/dX
             return f, grad_params
         end
 
-        -- optimize on current mini-batch
+        -- Optimize on current mini-batch
         local _, fs = optim_method(batch_optimize, params, training_params)
 
-        -- evaluate current loss function value
+        -- Evaluate current loss function value
         local current_cost = fs[1]
         average_cost = average_cost + current_cost
 
-        -- show custom progress bar
+        -- Show custom progress bar
         progress(t, #indices, current_cost)
     end
 
-    -- evaluate average cost per epoch
+    -- Evaluate average cost per epoch
     local average_cost = round(average_cost / #indices, 4)
     print("Average cost per epoch: " .. average_cost)
 end
